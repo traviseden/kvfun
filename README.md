@@ -1,6 +1,6 @@
 # KV Fun with Fresh!
 
-Let's see what KV can do!
+Let's see what KV can do: [kvfun.site](https://kvfun.site)
 
 ### Usage
 
