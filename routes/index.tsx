@@ -4,7 +4,7 @@ import { HandlerContext, Handlers, PageProps } from "$fresh/server.ts";
 import { COLORS, SIZES, SHAPES } from "../lib/things.ts";
 import type { Thing, FullThing } from "../lib/things.ts";
 
-export const handler: Handlers<FullThing[] | null> = {
+export const handler: Handlers<any> = {
   async GET(_, ctx: HandlerContext) {
     const db: Deno.Kv = await Deno.openKv();
     const entries = db.list({prefix: ["things"]});
@@ -30,15 +30,10 @@ export default function Home({ data }: PageProps<FullThing[]>) {
       </Head>
       <div class="p-4 mx-auto max-w-screen-md">
         <Counter start={3} />
-        {data.length > 0 ? (
-          <ul>
-            {data.map(({id, shape, color, size}) => (
-              <li>{id}: {size} {color} {shape}</li>
-            ))}
-          </ul>
-        ) : (
-          <p>no things!</p>
-        )}
+        <hr class="my-4" />
+        <p>
+          <a href="/colors">Colors</a>
+        </p>
       </div>
     </>
   );
