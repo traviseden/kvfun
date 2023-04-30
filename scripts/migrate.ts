@@ -1,7 +1,7 @@
 // // deno-lint-ignore-file no-explicit-any
 import { COLORS, SIZES, SHAPES } from "../lib/things.ts";
 
-const CURRENT = 10;
+const CURRENT = 12;
 
 export async function handleMigration() {
     const db: Deno.Kv = await Deno.openKv();
@@ -19,6 +19,7 @@ export async function handleMigration() {
 }
 
 async function dropCollections(db: Deno.Kv, ...collections: Deno.KvKey[]) {
+    console.log("dropCollections");
     let count = 0;
     for (const collection of collections) {
         const things = db.list({prefix: collection});
@@ -31,6 +32,7 @@ async function dropCollections(db: Deno.Kv, ...collections: Deno.KvKey[]) {
 }
 
 async function addManyThings(db: Deno.Kv) {
+    console.log("addManyThings");
     let id;
     for (id = 1; id <= 1000; id++) {
         const color = Math.floor(Math.random() * COLORS.length);
@@ -41,11 +43,12 @@ async function addManyThings(db: Deno.Kv) {
         const byColorKey = ["things_by_color", color, id];
         const bySizeKey = ["things_by_size", size, id];
         const byShapeKey = ["things_by_shape", shape, id];
+        const fullThing = {...thing, id};
         await db.atomic()
-            .set(primaryKey, thing)
-            .set(byColorKey, thing)
-            .set(bySizeKey, thing)
-            .set(byShapeKey, thing)
+            .set(primaryKey, fullThing)
+            .set(byColorKey, fullThing)
+            .set(bySizeKey, fullThing)
+            .set(byShapeKey, fullThing)
             .commit();
     }
 }
