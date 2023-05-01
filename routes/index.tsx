@@ -1,9 +1,9 @@
 import { Head } from "$fresh/runtime.ts";
 import Counter from "../islands/Counter.tsx";
 import { PageProps } from "$fresh/server.ts";
-import type { FullThing } from "../lib/things.ts";
+import type { Thing } from "../lib/things.ts";
 
-export default function Home({ data }: PageProps<FullThing[]>) {
+export default function Home({ data }: PageProps<Thing[]>) {
   return (
     <>
       <Head>

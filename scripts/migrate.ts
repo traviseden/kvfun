@@ -1,11 +1,12 @@
 // // deno-lint-ignore-file no-explicit-any
 import { COLORS, SIZES, SHAPES } from "../lib/things.ts";
+import type { NormalizedThing } from "../lib/things.ts";
 
 const CURRENT = 12;
 
 export async function handleMigration() {
     const db: Deno.Kv = await Deno.openKv();
-    const migrationStatus: number = await db.get(["stuff", "migration"]).then((res: any) => Number(res?.value) || 0);
+    const migrationStatus = await db.get<number>(["stuff", "migration"]).then((res) => Number(res?.value) || 0);
     if (CURRENT <= migrationStatus) {
         console.log("no migration");
         return;
@@ -38,17 +39,16 @@ async function addManyThings(db: Deno.Kv) {
         const color = Math.floor(Math.random() * COLORS.length);
         const size = Math.floor(Math.random() * SIZES.length);
         const shape = Math.floor(Math.random() * SHAPES.length);
-        const thing = {color, size, shape};
+        const thing: NormalizedThing = {id, color, size, shape};
         const primaryKey = ["things", id];
         const byColorKey = ["things_by_color", color, id];
         const bySizeKey = ["things_by_size", size, id];
         const byShapeKey = ["things_by_shape", shape, id];
-        const fullThing = {...thing, id};
         await db.atomic()
-            .set(primaryKey, fullThing)
-            .set(byColorKey, fullThing)
-            .set(bySizeKey, fullThing)
-            .set(byShapeKey, fullThing)
+            .set(primaryKey, thing)
+            .set(byColorKey, thing)
+            .set(bySizeKey, thing)
+            .set(byShapeKey, thing)
             .commit();
     }
 }

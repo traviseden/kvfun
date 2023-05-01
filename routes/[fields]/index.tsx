@@ -1,23 +1,44 @@
+// deno-lint-ignore-file no-explicit-any
 import { Head } from "$fresh/runtime.ts";
 import { HandlerContext, Handlers, PageProps } from "$fresh/server.ts";
-import { COLORS, SIZES, SHAPES } from "../../lib/things.ts";
+import  {COLORS, SIZES, SHAPES} from "../../lib/things.ts";
+import  {Color, Size, Shape} from "../../lib/things.ts";
 
-export const handler: Handlers<any> = {
-  async GET(_, ctx: HandlerContext) {
+type List = Color[] | Size[] | Shape[];
+
+type FieldOptionsProps =
+| {error: string}
+| {fields: string, list: List}
+
+export const handler: Handlers<FieldOptionsProps> = {
+  GET(_, ctx: HandlerContext<FieldOptionsProps>) {
     const { fields } = ctx.params;
-    let list;
+    let list: List = [];
     if (fields === 'colors') {
       list = COLORS;
     } else if (fields === 'sizes') {
       list = SIZES;
     } else if (fields === 'shapes') {
       list = SHAPES;
+    } else {
+      return ctx.render({error: "Invalid field"})
     }
     return ctx.render({fields, list});
   },
 };
 
-export default function Colors({ data }: PageProps<any>) {
+export default function Colors({ data }: PageProps<FieldOptionsProps>) {
+  if ('error' in data) return (
+    <>
+      <Head>
+        <title>Error!</title>
+      </Head>
+      <div class="p-4 mx-auto max-w-screen-md">
+
+      </div>
+    </>
+  );
+
   return (
     <>
       <Head>

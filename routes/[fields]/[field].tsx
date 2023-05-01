@@ -1,27 +1,34 @@
 import { Head } from "$fresh/runtime.ts";
 import { HandlerContext, Handlers, PageProps } from "$fresh/server.ts";
 import { COLORS, SIZES, SHAPES } from "../../lib/things.ts";
-import type { FullThing } from "../../lib/things.ts";
+import type { Thing, NormalizedThing } from "../../lib/things.ts";
 
-export const handler: Handlers<any> = {
-  async GET(_, ctx: HandlerContext) {
+
+type ThingByFieldProps =
+| {error: string}
+| {fields: string, things: Thing[]}
+
+export const handler: Handlers<ThingByFieldProps> = {
+  async GET(_, ctx: HandlerContext<ThingByFieldProps>) {
     const { fields, field } = ctx.params;
     let index;
     let prefix;
     if (fields === 'colors') {
-      index = COLORS.indexOf(field as typeof COLORS[number]);
+      index = COLORS.indexOf(field);
       prefix = ["things_by_color", index];
     } else if (fields === 'sizes') {
-      index = SIZES.indexOf(field as typeof SIZES[number]);
+      index = SIZES.indexOf(field);
       prefix = ["things_by_size", index];
     } else if (fields === 'shapes') {
-      index = SHAPES.indexOf(field as typeof SHAPES[number]);
+      index = SHAPES.indexOf(field);
       prefix = ["things_by_shape", index];
+    } else {
+      return ctx.render({error: "Invalid field"})
     }
-    // const index = COLORS.indexOf(color as typeof COLORS[number]);
+
     const db: Deno.Kv = await Deno.openKv();
-    const entries = db.list({prefix});
-    const things: FullThing[] = [];
+    const entries = db.list<NormalizedThing>({prefix});
+    const things: Thing[] = [];
     for await (const entry of entries) {
       things.push({
         id: entry.value.id,
@@ -35,7 +42,18 @@ export const handler: Handlers<any> = {
 };
 
 
-export default function ColorSingle({ data }: PageProps<any>) {
+export default function ColorSingle({ data }: PageProps<ThingByFieldProps>) {
+  if ('error' in data) return (
+    <>
+      <Head>
+        <title>Error!</title>
+      </Head>
+      <div class="p-4 mx-auto max-w-screen-md">
+
+      </div>
+    </>
+  );
+
   return (
     <>
       <Head>

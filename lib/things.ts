@@ -1,11 +1,22 @@
-export const COLORS = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet', 'purple', 'pink', 'silver', 'gold', 'beige', 'brown'] as const;
-export const SIZES = ['tiny', 'small', 'medium', 'big', 'large', 'huge', 'massive', 'gigantic'] as const;
-export const SHAPES = ['square', 'circle', 'rectangle', 'triangle', 'polygon', 'parallelogram'] as const;
+export const COLORS = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet', 'purple', 'pink', 'silver', 'gold', 'beige', 'brown'];
+export const SIZES = ['tiny', 'small', 'medium', 'big', 'large', 'huge', 'massive', 'gigantic'];
+export const SHAPES = ['square', 'circle', 'rectangle', 'triangle', 'polygon', 'parallelogram'];
+
+export type Color = typeof COLORS[number];
+export type Size = typeof SIZES[number];
+export type Shape = typeof SHAPES[number];
 
 export type Thing = {
-    color: typeof COLORS[number];
-    size: typeof SIZES[number];
-    shape: typeof SHAPES[number];
+    id: number
+    color: Color;
+    size: Size;
+    shape: Shape;
 }
 
-export type FullThing = Thing & {id: number}
+export type NormalizedThing = {
+    id: number,
+    color: number,
+    size: number,
+    shape: number,
+}
+  
